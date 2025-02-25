@@ -9,6 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.3.0"
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "astro": "^5.3.0",
+    "ol": "^10.4.0",
+    "openlayers": "^4.6.5"
   }
 }

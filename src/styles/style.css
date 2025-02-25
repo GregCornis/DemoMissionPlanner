@@ -1,0 +1,22 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+#map {
+    height: 50vh;
+    width: 100vh - 2em;
+    margin: 1em;
+}
+
+#new {
+    position: absolute;
+    width: 4em;
+    bottom: 1em;
+    right: 1em;
+    background: #dab222;
+    border-radius: 2em;
+    border: none;
+    padding: 1em;
+}
+

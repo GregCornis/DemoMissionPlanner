@@ -1,0 +1,120 @@
+---
+const { campaign } = Astro.props;
+---
+<div class:list={["campaign", campaign.show ? "showing" : "hidden"]}>
+    <div class="color" style={ `background-color: ${campaign.color}` }></div>
+    <div class="name">{campaign.title}</div>
+    <div class="n">{campaign.turbines?.length ?? 0} turbines</div>
+    <div class="date">{campaign.deadline}</div>
+    <div>Status: {campaign?.status}</div>
+    <button id="show">
+        <i class={campaign.show ? "fa fa-eye" : "fa fa-eye-slash"}></i>
+    </button>
+
+</div>
+
+<div style="display: none;">
+    <!-- Turbines -->
+    { campaign.turbines.map((t) =>
+        <div class="turbine">
+            <div class="name">{t.name}</div>
+            <div class="coord">{t.latitude}, {t.longitude}</div>
+            <a class="maps" target="_blank" href={`https://www.google.com/maps/place/${t.latitude},${t.longitude}`}>Maps</a>
+        </div>
+    ) }
+</div>
+
+<style>
+    .campaign {
+        margin: 1em 1em;
+        width: 100% - 4em;
+        padding: 0.5em;
+        background-color: rgba(170, 211, 223, 0.659);
+        border-radius: 0.5em;
+
+        display: flex;
+        flex-direction: row;
+        
+        box-shadow: 4px 4px 4px rgba(60, 60, 93, 0.33)
+        
+    }
+
+    .campaign:hover {
+        }
+
+    .campaign.hidden {
+        background-color: rgba(212, 210, 207, 0.547);
+    }
+
+    .campaign .color {
+        width: 0.5em;
+        height: 0.5em;
+        border-radius: 50%;
+        margin-right: 1em;
+    }
+
+    .campaign .name {
+        margin-right: 2em;
+        font-weight: bold;
+        width: 10%;
+    }
+
+    .campaign .date {
+        width: 20%;
+    }
+
+    .campaign .n {
+        width: 20%;
+    }
+
+    .campaign #show {
+        background-color: transparent;
+        border: none;
+    }
+
+    .campaign #show,i {
+        margin-left: auto;
+        width: 2em;
+    }
+
+    .turbine {
+        margin: 0em 0em 0em 2em;
+        width: 90%;
+        padding: 1em;
+        background-color: rgba(170, 211, 223, 0.396);
+        
+        display: flex;
+        flex-direction: row;
+    }
+
+    .turbine .name {
+        font-weight: bold;
+        width: 30%;
+    }
+
+    .turbine .coord {
+        width: 30%;
+    }
+
+</style>
+
+<script>
+    var acc = document.getElementsByClassName("campaign");
+    var i;
+
+    for (i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function() {
+        /* Toggle between adding and removing the "active" class,
+        to highlight the button that controls the panel */
+        this.classList.toggle("active");
+
+        // /* Toggle between hiding and showing the active panel */
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+        panel.style.display = "none";
+        } else {
+        panel.style.display = "block";
+        }
+    });
+    } 
+</script>

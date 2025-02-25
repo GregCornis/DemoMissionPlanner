@@ -1,11 +1,156 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import "../styles/style.css";
+import CampaignRow from "../components/campaignRow.astro";
+import Map from "../components/map.astro";
+import "../../node_modules/ol/ol.css";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = "Inspection planner";
+
+const campaigns = [
+	{
+		title: "La Crête Tarlare",
+		deadline: "04/03/2025",
+		turbines: [
+			{ name: "E1", latitude: 50.59462819305598, longitude: 2.2333717442885583 },
+			{ name: "E2", latitude: 50.59380532582244, longitude: 2.2407797827562037 },
+			{ name: "E3", latitude: 50.59683032344869, longitude: 2.243012478875782 },
+			{ name: "E4", latitude: 50.60065234960081, longitude: 2.2453087581576554 },
+			{ name: "E5", latitude: 50.594097812560925, longitude: 2.2494255677601087 },
+		],
+		status: "OK",
+		show: true,
+		color: "#FF2200"
+	},
+	{
+		title: "Haute Lys",
+		deadline: "14/03/2025",
+		turbines: [
+			{ name: "E1", latitude: 50.576870281523, longitude: 2.1943177983451685 },
+			{ name: "E2", latitude: 50.597062294000644, longitude: 2.115397209334834 },
+			{ name: "E3", latitude: 50.56887557289846, longitude: 2.1926631098655136 },
+			{ name: "E4", latitude: 50.56686830084926, longitude: 2.1897120570961404 },
+			{ name: "E5", latitude: 50.56458513170914, longitude: 2.186504581458032 },
+			{ name: "E6", latitude: 50.55500999338365, longitude: 2.1898309234676465 },
+			{ name: "E7", latitude: 50.58907160887241, longitude: 2.1168529650842633 },
+			{ name: "E8", latitude: 50.57218820457379, longitude: 2.09010842266812 },
+			{ name: "E9", latitude: 50.56951775180251, longitude: 2.097939962124698 },
+			
+		],
+		status: "Warning: restricted zone (VOLTAC)",
+		show: true,
+		color: "#88BB00"
+	},
+	{
+		title: "Northwind",
+		deadline: "21/05/2025",
+		turbines: [
+			{ name: "D3", latitude: 51.63381, longitude: 2.90189 },
+			{ name: "D4", latitude: 51.6309, longitude: 2.8951 },
+			{ name: "D5", latitude: 51.62721, longitude: 2.89059 },
+			{ name: "D6", latitude: 51.62348, longitude: 2.88604 },
+			{ name: "C2", latitude: 51.63144, longitude: 2.91426 },
+			{ name: "C4", latitude: 51.63903, longitude: 2.92159 },
+			{ name: "C6", latitude: 51.63792, longitude: 2.91359 },
+			{ name: "C7", latitude: 51.63408, longitude: 2.90987 },
+			{ name: "C9", latitude: 51.64101, longitude: 2.9092 },
+			{ name: "B4", latitude: 51.63375, longitude: 2.93038 },
+			{ name: "A2", latitude: 51.62352, longitude: 2.92744 },
+			{ name: "A4", latitude: 51.63111, longitude: 2.93478 },
+			{ name: "A5", latitude: 51.62847, longitude: 2.93916 },
+			{ name: "C10", latitude: 51.64477, longitude: 2.91205 },
+		],
+		status: "OK",
+		show: false,
+		color: "#3366FF"
+	},
+	{
+		title: "Haut-Cabardès",
+		deadline: "01/06/2025",
+		turbines: [
+			{ name: "WTG1", latitude: 43.399197, longitude: 2.428327},
+			{ name: "WTG2", latitude: 43.399197, longitude: 2.428327},
+			{ name: "WTG3", latitude: 43.399197, longitude: 2.428327},
+			{ name: "WTG4", latitude: 43.399197, longitude: 2.428327},
+		],
+		status: "OK",
+		show: true,
+		color: "#AA33FF"
+	},
+	{
+		title: "Luc-sur-Orbieu",
+		deadline: "31/12/2025",
+		turbines: [
+			{ name: "LUCO07", latitude: 43.1735583, longitude: 2.8180222222 }
+		],
+		status: "OK",
+		show: false,
+		color: "#FFCC22"
+	},
+	{
+		title: "Col de la Fageole",
+		deadline: "31/12/2025",
+		turbines: [
+		{ name: "F0", latitude: 45.110154, longitude: 3.130004 },
+		{ name: "F0", latitude: 45.110154, longitude: 3.130004 },
+		{ name: "F0", latitude: 45.110154, longitude: 3.130004 },			
+		],
+		status: "OK",
+		show: true,
+		color: "#FF6F00"
+	}
+];
+
+
+const serialized = JSON.stringify(campaigns);
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		<link
+			rel="icon"
+			type="image/x-icon"
+			href="https://openlayers.org/favicon.ico"
+		/>
+
+		<title>{title}</title>
+	</head>
+	<body>
+		
+		<Map campaigns = { campaigns } />
+			
+
+		<div>
+			{campaigns.map((c) => <CampaignRow campaign={c} />)}
+		</div>
+
+		<button id="new">
+			<i class="fa-solid fa-plus"></i>
+		</button>
+
+		{/* Add a client side script for loading Font-Awesome */}
+		<script>
+			// import the required functions and icons
+			import {
+				library,
+				config,
+				dom,
+			} from "@fortawesome/fontawesome-svg-core";
+			import { faPlus, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+
+			// since we want astro to handle the css we should disable automatic css injection on the client
+			// this is similar to other ssr frameworks like next.js or nuxt
+			config.autoAddCss = false;
+
+			// create a subset of icons that you are going to use so
+			// astro is able to tree shake and optimize the javascript bundle for best performance
+			library.add(faPlus, faEye, faEyeSlash);
+
+			// replace the unprocessed icons with the svg and watch for additional icons
+			dom.watch();
+		</script>
+	</body>
+</html>

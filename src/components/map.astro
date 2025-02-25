@@ -1,0 +1,139 @@
+---
+const { campaigns } = Astro.props;
+---
+
+<map-element data-campaigns={JSON.stringify(campaigns)}> </map-element>
+
+<script>
+    import { Map, View, Feature } from "ol";
+    import VectorSource from "ol/source/Vector.js";
+    import VectorLayer from "ol/layer/Vector.js";
+    import { fromLonLat } from "ol/proj.js";
+    import Point from "ol/geom/Point.js";
+    import TileLayer from "ol/layer/Tile";
+    import OSM from "ol/source/OSM";
+    import { Circle, Fill, Stroke, Style } from "ol/style.js";
+    import { TileWMS } from 'ol/source';
+import type { ACTION_ERROR_CODES } from "astro:actions";
+
+    class MapElement extends HTMLElement {
+        layers: any;
+        campaigns: any;
+
+        connectedCallback() {
+            // Read the message from the data attribute.
+            const campaigns = JSON.parse(this.dataset.campaigns);
+
+            console.log(campaigns);
+
+            this.layers = campaigns.map((campaign: any) =>
+                this.createLayer(campaign)
+            );
+
+
+            const map = new Map({
+                target: "map", // Id of target div
+                layers: [
+                    new TileLayer({
+                        source: new OSM(),
+                    }),
+                    ...this.layers
+                    
+                    // new TileLayer({
+                    //   source: new TileWMS(({
+                    //     url: "https://data.geopf.fr/wms-v/wms?SERVICE=WMS&VERSION=1.3.0&source=TRANSPORTS.DRONES.RESTRICTIONS%3Acarte_restriction_drones_lf",
+                    //     params: {'TILED': true},
+                    //   }))
+                    // }),
+                ],
+                view: new View({
+                    center: fromLonLat([2.896372, 46.6024]),
+                    zoom: 5,
+                }),
+            });
+
+            this.layers[0].setVisible(false);
+            this.campaigns = campaigns;
+
+            console.log("Map ready");
+
+
+            this.registerShowCallbacks();
+
+        }
+
+        toggleVisible(farmName: string, visible: boolean) {
+            // Find index of campaign
+            const index = this.campaigns.findIndex((c) => c.title == farmName);
+            console.log("Toggling "+index);
+            this.layers[index].setVisible(visible);
+        }
+
+        createPoint(turbine: { longitude: number; latitude: number; name: any}, campaign) {
+            const point = new Feature({
+                    geometry: new Point(fromLonLat([turbine.longitude, turbine.latitude])),
+                    name: turbine.name,
+                    attribute: {farm: campaign.title}
+                });
+                const fill = new Fill({
+                    color: campaign.color,
+                });
+                console.log("Color " + campaign.color);
+                point.setStyle(
+                new Style({
+                        image: new Circle({
+                            fill: fill,
+                            radius: 5,
+                        }),
+                        fill: fill,
+                        // stroke: stroke,
+                    }),
+                );
+
+                return point;
+        }
+
+        createLayer(campaign) {
+            const points = campaign.turbines.map((turbine) => {
+                return this.createPoint(turbine, campaign)
+            });
+            console.log("Points: "+points.length);
+
+            const vectorSource = new VectorSource({
+                features: points,
+            });
+
+            const vectorLayer = new VectorLayer({
+                source: vectorSource,
+            });
+
+            return vectorLayer;
+        }
+
+        registerShowCallbacks() {
+            const toggles = document.querySelectorAll(".campaign #show");
+            console.log("Found " + toggles.length + " toggles");
+            toggles.forEach((t) => {
+                t.addEventListener("click", (event) => {
+                    console.log("clik");
+
+                    // Find farm name
+                    
+                    // Find if showing or not
+
+                    this.toggleVisible("Northwind", true);
+                    event.stopPropagation();
+                })
+            })
+        }
+    }
+
+    customElements.define("map-element", MapElement);
+
+</script>
+
+<div id="map"></div>
+
+<script>
+    // import "../js/openlayers.js";
+</script>
