@@ -13,8 +13,10 @@ const { campaigns } = Astro.props;
     import TileLayer from "ol/layer/Tile";
     import OSM from "ol/source/OSM";
     import { Circle, Fill, Stroke, Style } from "ol/style.js";
-    import { TileWMS } from 'ol/source';
-import type { ACTION_ERROR_CODES } from "astro:actions";
+    import {get as getProjection} from 'ol/proj.js';
+    import WMTS from 'ol/source/WMTS.js';
+    import WMTSTileGrid from 'ol/tilegrid/WMTS.js';
+    import {getTopLeft, getWidth} from 'ol/extent.js';
 
     class MapElement extends HTMLElement {
         layers: any;
@@ -30,6 +32,41 @@ import type { ACTION_ERROR_CODES } from "astro:actions";
                 this.createLayer(campaign)
             );
 
+            const projection = getProjection('EPSG:3857');
+            const projectionExtent = projection.getExtent();
+            const size = getWidth(projectionExtent) / 256;
+            const resolutions = new Array(19);
+            const matrixIds = new Array(19);
+            for (let z = 0; z < 19; ++z) {
+                // generate resolutions and matrixIds arrays for this WMTS
+                resolutions[z] = size / Math.pow(2, z);
+                matrixIds[z] = z;
+            }
+            console.log(matrixIds);
+            console.log(projection);
+
+            const geoportail = new TileLayer({
+                opacity: 0.7,
+                source: new WMTS({
+                    attributions:
+                    'Tiles © <a href="https://www.geoportail.gouv.fr/donnees/restrictions-uas-categorie-ouverte-et-aeromodelisme"' +
+                    ' target="_blank">Geoportail</a>',
+                    url: 'https://data.geopf.fr/wmts?tilematrixset=PM',
+                    layer: 'TRANSPORTS.DRONES.RESTRICTIONS',
+                    // matrixSet: 'GoogleMapsCompatible',
+                    format: 'image/png',
+                    projection: projection,
+                    tileGrid: new WMTSTileGrid({
+                        origin: getTopLeft(projectionExtent),
+                        resolutions: resolutions,
+                        matrixIds: matrixIds,
+                    }),
+                    style: 'normal',
+                    wrapX: true,
+                })
+            });
+            console.log("Geoportail created :" + geoportail);
+
 
             const map = new Map({
                 target: "map", // Id of target div
@@ -37,6 +74,7 @@ import type { ACTION_ERROR_CODES } from "astro:actions";
                     new TileLayer({
                         source: new OSM(),
                     }),
+                    geoportail,
                     ...this.layers
                     
                     // new TileLayer({
@@ -52,7 +90,6 @@ import type { ACTION_ERROR_CODES } from "astro:actions";
                 }),
             });
 
-            this.layers[0].setVisible(false);
             this.campaigns = campaigns;
 
             console.log("Map ready");
@@ -118,7 +155,7 @@ import type { ACTION_ERROR_CODES } from "astro:actions";
                     console.log("clik");
 
                     // Find farm name
-                    
+
                     // Find if showing or not
 
                     this.toggleVisible("Northwind", true);

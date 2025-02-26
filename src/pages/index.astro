@@ -139,7 +139,7 @@ const serialized = JSON.stringify(campaigns);
 				config,
 				dom,
 			} from "@fortawesome/fontawesome-svg-core";
-			import { faPlus, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+			import { faPlus, faEye, faEyeSlash, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
 			// since we want astro to handle the css we should disable automatic css injection on the client
 			// this is similar to other ssr frameworks like next.js or nuxt
@@ -147,7 +147,7 @@ const serialized = JSON.stringify(campaigns);
 
 			// create a subset of icons that you are going to use so
 			// astro is able to tree shake and optimize the javascript bundle for best performance
-			library.add(faPlus, faEye, faEyeSlash);
+			library.add(faPlus, faEye, faEyeSlash, faFilePdf);
 
 			// replace the unprocessed icons with the svg and watch for additional icons
 			dom.watch();
