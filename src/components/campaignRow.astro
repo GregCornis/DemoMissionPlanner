@@ -6,7 +6,10 @@ const { campaign } = Astro.props;
     <div class="name">{campaign.title}</div>
     <div class="n">{campaign.turbines?.length ?? 0} turbines</div>
     <div class="date">{campaign.deadline}</div>
-    <div>Status: {campaign?.status}</div>
+    <div class="status">Status: {campaign?.status}</div>
+    <a href="example.pdf" target="_blank">
+        <i class="fa-solid fa-file-pdf pdf-icon"></i>
+    </a>
     <button id="show">
         <i class={campaign.show ? "fa fa-eye" : "fa fa-eye-slash"}></i>
     </button>
@@ -34,13 +37,14 @@ const { campaign } = Astro.props;
 
         display: flex;
         flex-direction: row;
+        align-items: center;
         
-        box-shadow: 4px 4px 4px rgba(60, 60, 93, 0.33)
-        
+        box-shadow: 4px 4px 4px rgba(60, 60, 93, 0.33);   
     }
 
     .campaign:hover {
-        }
+        box-shadow: 6px 6px 4px rgba(60, 60, 93, 0.33);
+    }
 
     .campaign.hidden {
         background-color: rgba(212, 210, 207, 0.547);
@@ -65,6 +69,14 @@ const { campaign } = Astro.props;
 
     .campaign .n {
         width: 20%;
+    }
+    .campaign .status {
+        width: 25%;
+    }
+
+    .campaign .pdf-icon {
+        width: 1.5em;
+        color: brown;
     }
 
     .campaign #show {
